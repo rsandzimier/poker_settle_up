@@ -33,9 +33,145 @@ data = [
 	},
 ];
 
-var net_gains = [];
-data.forEach(player => net_gains.push(player.net));
-var n_players = net_gains.length;
+var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets')];
+function fit2page(evt) {
+	// Resize Header Font
+	var header = document.getElementById('header');
+	var headerText = document.getElementById('headerText');
+	var maxHeaderTextWidth = 0.8*header.offsetWidth;
+	var headerFontSize = 1;
+	headerText.style.fontSize = `${headerFontSize}px`;
+	while (headerText.offsetWidth<maxHeaderTextWidth && headerFontSize<80) {
+		headerText.style.fontSize = `${++headerFontSize}px`;
+	}
+	headerText.style.fontSize = `${--headerFontSize}px`;
+
+	var cols = 1;
+	while (document.getElementById('inputTable').offsetWidth<document.getElementById('subwrapper').offsetWidth) {
+		cols++;
+		inputs.forEach(el => el.cols=cols);
+	}
+	cols--;
+	inputs.forEach(el => el.cols=cols);
+}
+if(window.attachEvent) {
+    window.attachEvent('onload', fit2page);
+} else {
+    if(window.onload) {
+        var curronload = window.onload;
+        var newonload = function(evt) {
+            curronload(evt);
+            fit2page(evt);
+        };
+        window.onload = newonload;
+    } else {
+        window.onload = fit2page;
+    }
+}
+window.addEventListener('resize', fit2page);
+window.addEventListener('orientationchange', fit2page);
+screen.orientationchange = fit2page;
+
+var netcheck = document.getElementById('netcheck');
+netcheck.onclick = () => {
+	if (netcheck.checked) {
+		inputs[1].readOnly = true;
+		inputs[2].readOnly = true;
+		inputs[3].readOnly = false;
+	} else {
+		inputs[1].readOnly = false;
+		inputs[2].readOnly = false;
+		inputs[3].readOnly = true;
+	}
+}
+
+var nameArr = [];
+function updateNames() { nameArr = inputs[0].value.split('\n'); }
+inputs[0].oninput = updateNames;
+var netArr = [];
+function updateNets() {
+	if (netcheck.checked) {
+		netArr = inputs[3].value.split('\n').map(x => parseFloat(x));
+	} else {
+		var buyinArr = inputs[1].value.split('\n').map(x => parseFloat(x));
+		var stackArr = inputs[2].value.split('\n').map(x => parseFloat(x));
+		netArr = [];
+		for (let i=0; i<Math.min(buyinArr.length,stackArr.length); i++) {
+			netArr.push(stackArr[i]-buyinArr[i]);
+		}
+		inputs[3].value = netArr.join('\n');
+	}
+}
+inputs[1].oninput = updateNets;
+inputs[2].oninput = updateNets;
+inputs[3].oninput = updateNets;
+
+function checkInput() {
+	var errorStr = '';
+
+	var names = inputs[0].value.split('\n');
+	var buyins = inputs[1].value.split('\n');
+	var stacks = inputs[2].value.split('\n');
+	var nets = inputs[3].value.split('\n');
+
+	if (netcheck.checked) {
+		if (names.length != nets.length) {
+			errorStr+= 'Number of names must equal number of Nets\n';
+		}	
+	} else {
+		if (names.length != buyins.length) {
+			errorStr+= 'Number of names must equal number of Buy-Ins\n';
+		}
+		if (names.length != stacks.length) {
+			errorStr+= 'Number of names must equal number of Final Stacks\n';
+		}
+	}
+	
+	buyins.forEach(entry => {
+		if (isNaN(parseFloat(entry))) errorStr+= `BuyIn "${entry}" must be a number\n`;
+	});
+	stacks.forEach(entry => {
+		if (isNaN(parseFloat(entry))) errorStr+= `Final Stack "${entry}" must be a number\n`;
+	});
+	nets.forEach(entry => {
+		if (isNaN(parseFloat(entry))) errorStr+= `Net "${entry}" must be a number\n`;
+	});
+
+	if (errorStr.length==0) {
+		return false;
+	} else {
+		return errorStr.slice(0, errorStr.length-1);
+	}
+}
+
+var net_gains;
+var n_players;
+document.getElementById('calculate').onclick = () => {
+	var results = document.getElementById('results');
+	results.innerHTML = '';
+	
+	var errorStr = checkInput();
+	if (errorStr) {
+		var b = document.createElement('B');
+		b.appendChild(document.createTextNode('Please fix the following errors:'));
+		results.appendChild(b);
+		results.appendChild(document.createElement('BR'));
+		errorStr.split('\n').forEach(msg => {
+			results.appendChild(document.createTextNode(msg));
+			results.appendChild(document.createElement('BR'));
+		});
+	} else {
+		updateNames();
+		updateNets();
+		n_players = netArr.length;
+		var transactions = calcOptimalTransactions(netArr);
+		results.innerHTML = '';
+		transactions.forEach(trans => {
+			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2]}`))
+			results.appendChild(document.createElement('BR'));
+		})
+	}
+}
 
 function transactionsComparison(trans1, trans2) {
 	if (trans1.length==0 && trans2.length==0) return true;
@@ -119,11 +255,6 @@ function calcOptimalTransactionsAux(net_gains, transactions) {
 
 	return {net_gains: net_gains_opt, transactions: transactions_opt};
 }
-
-var transactions = calcOptimalTransactions(net_gains);
-console.log(transactions)
-console.log('done')
-
 
 function assert(assertion, message) {
 	if (!assertion) throw message;

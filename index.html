@@ -6,10 +6,50 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
-	<script src="file:///home/nick/GitHub/poker_settle_up/utils.js"></script>
-	<script src="file:///home/nick/GitHub/poker_settle_up/poker.js"></script>
+	<!-- Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="https://rsandzimier.github.io/poker_settle_up/main.css">
+
+	<!-- JavaScript -->
+	<script src="https://rsandzimier.github.io/poker_settle_up/utils.js"></script>
 </head>
 
-<body></body>
+<body>
+<div id="mainPage">
+	<div id="wrapper">
+		<header id="header">
+			<h1 id="headerText">Poker Settle Up</h1>
+		</header>
+		<main id="subwrapper">
+			<div>Script for optimizing transactions for settling up after playing a poker session at donkhouse.com</div><br>
+			<label>I already calculated everyone's net winnings</label>
+			<input type="checkbox" name="netcheck", id="netcheck" autocomplete="off"><br><br>
+			<table id="inputTable">
+				<tbody>
+					<tr>
+						<th>Names</th>
+						<th>Buy-Ins</th>
+						<th>Final Stacks</th>
+						<th>Nets</th>
+					</tr>
+					<tr>
+						<td><textarea name="names" id="names" cols="1" rows="10" placeholder="Player 1" wrap="off"></textarea></td>
+						<td><textarea name="buyins" id="buyins" cols="1" rows="10" placeholder="20.00" wrap="off"></textarea></td>
+						<td><textarea name="stacks" id="stacks" cols="1" rows="10" placeholder="35.00" wrap="off"></textarea></td>
+						<td><textarea name="nets" id="nets" cols="1" rows="10" placeholder="15.00" wrap="off" readonly></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+			<br>
+			<input type="button" name="calculate" id="calculate" value="Calculate!">
+			<br>
+			<div id="results"></div>
+		</main>
+	</div>
+</body>
+
+<script src="https://rsandzimier.github.io/poker_settle_up/poker.js"></script>
 
 </html>

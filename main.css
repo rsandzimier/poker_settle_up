@@ -1,0 +1,137 @@
+:root {
+	--main-font-size: 1.4rem;
+	--button-font-size: 0.7rem;
+	--close-button-column-width: 1em;
+	--textarea-padding: 0.2em;
+	--main-lr-padding: 6%;
+
+	--main-bg-color: #00e57f;
+	--accent-bg-color: #209CEE;
+	--form-bg-color: white;
+	--main-text-color: #222222;
+	--accent-text-color: white;
+	--main-input-border-color: grey;
+	--close-button-bg-color: rgb(249,74,107);
+	--close-button-border-color: rgb(207,31,74);
+	--add-button-bg-color: rgb(211,211,211);
+	--add-button-border-color: rgb(151,151,151);
+	--main-font-family: 'Open Sans';
+	--accent-font-family: 'Open Sans';
+	--corner-rounding: 5px;
+}
+
+body {
+	background-color: var(--main-bg-color);
+}
+#mainPage {
+	background-color: var(--main-bg-color);
+	font-family: var(--main-font-family);
+	color: var(--main-text-color);
+}
+#wrapper {
+	background-color: var(--form-bg-color);
+	width: 60%;
+	margin-left: auto ;
+	margin-right: auto ;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+main {
+	margin: var(--main-lr-padding);
+	padding-bottom: var(--main-lr-padding);
+	font-family: var(--main-font-family);
+	font-size: var(--main-font-size);
+}
+
+header {
+	background-color: var(--accent-bg-color);
+	color: var(--accent-text-color);
+	font-family: var(--accent-font-family);
+	font-weight: bold;
+	padding: 0.2em var(--main-lr-padding);
+	white-space: nowrap;
+}
+h1 {
+	display: inline-block;
+}
+
+.spacer {
+	height: 2em;
+}
+
+label {
+	margin-right:1em;
+	font-size: var(--main-font-size);
+}
+label.unit {
+	margin-right:0;
+}
+input[type=checkbox] {
+	width: 1.1em;
+	height: 1.1em;
+	padding: 0;
+}
+
+table {
+	margin: 0 auto;
+}
+textarea {
+	font-size: var(--main-font-size);
+	font-family: var(--main-font-family);
+	border: 1px solid var(--main-input-border-color);
+	padding: var(--textarea-padding);
+	outline: none;
+	resize: none;
+	text-align: right;
+}
+#names {
+	text-align: left;
+}
+textarea[readonly] {
+	background-color: #DCDCDC;
+}
+input[type=button] {
+	font-size: var(--main-font-size);
+	background-color: var(--accent-bg-color);
+	border: 1px solid var(--accent-border-color);
+	color: white;
+	padding: 0.6em 3em;
+	max-width: 100%;
+	display: block;
+}
+
+.tableLabel {
+	font-weight: bold;
+}
+th {
+	font-size: var(--main-font-size);
+	font-weight: normal;
+}
+
+p, ol {
+	font-family: var(--main-font-family);
+	font-size: var(--main-font-size);
+}
+
+footer {
+	text-align: center;
+	font-family: var(--main-font-family);
+	clear: both;
+}
+
+@media only screen and (max-width: 1024px) {
+	:root {
+		--main-font-size: 1rem;
+		--button-font-size: 0.7rem;
+	}
+	input[type=button] {
+		width: 100%;
+		padding: 0.6em 2em;
+		border-radius: var(--corner-rounding);
+	}
+	.spacer {
+		height: 1em;
+	}
+	#wrapper {
+		width: 99%;
+	}
+}
