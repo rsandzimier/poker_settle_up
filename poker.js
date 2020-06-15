@@ -1,37 +1,4 @@
-data = [
-	{
-		name: 'rsandz',
-		net: -30
-	},
-	{
-		name: 'rupumped',
-		net: 111.50
-	},
-	{
-		name: 'ironpiggy',
-		net: 0
-	},
-	{
-		name: 'jguggenh',
-		net: -10.5
-	},
-	{
-		name: 'Shikari',
-		net: -50
-	},
-	{
-		name: 'Gab',
-		net: -60
-	},
-	{
-		name: 'bobman1234',
-		net: 5.5
-	},
-	{
-		name: 'All-in-Fili',
-		net: 33.5
-	},
-];
+const EPS = 1e-6;
 
 var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets')];
 function fit2page(evt) {
@@ -47,6 +14,7 @@ function fit2page(evt) {
 	headerText.style.fontSize = `${--headerFontSize}px`;
 
 	var cols = 1;
+	inputs.forEach(el => el.cols=cols);
 	while (document.getElementById('inputTable').offsetWidth<document.getElementById('subwrapper').offsetWidth) {
 		cols++;
 		inputs.forEach(el => el.cols=cols);
@@ -91,15 +59,15 @@ inputs[0].oninput = updateNames;
 var netArr = [];
 function updateNets() {
 	if (netcheck.checked) {
-		netArr = inputs[3].value.split('\n').map(x => parseFloat(x));
+		netArr = inputs[3].value.split('\n').map(x => roundTo(parseFloat(x),2));
 	} else {
-		var buyinArr = inputs[1].value.split('\n').map(x => parseFloat(x));
-		var stackArr = inputs[2].value.split('\n').map(x => parseFloat(x));
+		var buyinArr = inputs[1].value.split('\n').map(x => roundTo(parseFloat(x),2));
+		var stackArr = inputs[2].value.split('\n').map(x => roundTo(parseFloat(x),2));
 		netArr = [];
 		for (let i=0; i<Math.min(buyinArr.length,stackArr.length); i++) {
-			netArr.push(stackArr[i]-buyinArr[i]);
+			netArr.push(roundTo(stackArr[i]-buyinArr[i],2));
 		}
-		inputs[3].value = netArr.join('\n');
+		inputs[3].value = netArr.map(x=>x.toFixed(2)).join('\n');
 	}
 }
 inputs[1].oninput = updateNets;
@@ -117,7 +85,10 @@ function checkInput() {
 	if (netcheck.checked) {
 		if (names.length != nets.length) {
 			errorStr+= 'Number of names must equal number of Nets\n';
-		}	
+		}
+		nets.forEach(entry => {
+			if (isNaN(parseFloat(entry))) errorStr+= `Net "${entry}" must be a number\n`;
+		});
 	} else {
 		if (names.length != buyins.length) {
 			errorStr+= 'Number of names must equal number of Buy-Ins\n';
@@ -125,17 +96,13 @@ function checkInput() {
 		if (names.length != stacks.length) {
 			errorStr+= 'Number of names must equal number of Final Stacks\n';
 		}
+		buyins.forEach(entry => {
+			if (isNaN(parseFloat(entry))) errorStr+= `BuyIn "${entry}" must be a number\n`;
+		});
+		stacks.forEach(entry => {
+			if (isNaN(parseFloat(entry))) errorStr+= `Final Stack "${entry}" must be a number\n`;
+		});
 	}
-	
-	buyins.forEach(entry => {
-		if (isNaN(parseFloat(entry))) errorStr+= `BuyIn "${entry}" must be a number\n`;
-	});
-	stacks.forEach(entry => {
-		if (isNaN(parseFloat(entry))) errorStr+= `Final Stack "${entry}" must be a number\n`;
-	});
-	nets.forEach(entry => {
-		if (isNaN(parseFloat(entry))) errorStr+= `Net "${entry}" must be a number\n`;
-	});
 
 	if (errorStr.length==0) {
 		return false;
@@ -144,7 +111,6 @@ function checkInput() {
 	}
 }
 
-var net_gains;
 var n_players;
 document.getElementById('calculate').onclick = () => {
 	var results = document.getElementById('results');
@@ -167,7 +133,7 @@ document.getElementById('calculate').onclick = () => {
 		var transactions = calcOptimalTransactions(netArr);
 		results.innerHTML = '';
 		transactions.forEach(trans => {
-			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2]}`))
+			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(2)}`))
 			results.appendChild(document.createElement('BR'));
 		})
 	}
@@ -184,8 +150,8 @@ function transactionsComparison(trans1, trans2) {
 	}
 
 	// Count # transactions per player
-	var counts1 = new Array(n_players).fill(0);
-	var counts2 = new Array(n_players).fill(0);
+	var counts1 = new NumArray(n_players).fill(0);
+	var counts2 = new NumArray(n_players).fill(0);
 	trans1.forEach(trans => {
 		counts1[trans[0]]++;
 		counts1[trans[1]]++;
@@ -205,8 +171,8 @@ function transactionsComparison(trans1, trans2) {
 	}
 
 	// Store transactions amounts in arrays
-	var amounts1 = [];
-	var amounts2 = [];
+	var amounts1 = new NumArray();
+	var amounts2 = new NumArray();
 	trans1.forEach(trans => amounts1.push(trans[2]));
 	trans2.forEach(trans => amounts2.push(trans[2]));
 
@@ -215,7 +181,7 @@ function transactionsComparison(trans1, trans2) {
 }
 
 function calcOptimalTransactions(net_gains) {
-	assert(Math.abs(net_gains.reduce((a,b) => a+b, 0))==0, 'Net gains must sum to 0');
+	assert(Math.abs(net_gains.reduce((a,b) => a+b, 0))<EPS, 'Net gains must sum to 0');
 	var obj = calcOptimalTransactionsAux(net_gains, []);
 
 	return obj.transactions;
@@ -224,7 +190,7 @@ function calcOptimalTransactions(net_gains) {
 function calcOptimalTransactionsAux(net_gains, transactions) {
 	var net_gains_all_zero = true;
 	net_gains.forEach(ng => {
-		if (ng>0) net_gains_all_zero = false;
+		if (Math.abs(ng)>EPS) net_gains_all_zero = false;
 	});
 	if (net_gains_all_zero) return {net_gains: net_gains, transactions: transactions};
 
@@ -233,8 +199,8 @@ function calcOptimalTransactionsAux(net_gains, transactions) {
 
 	for (let i=0; i<net_gains.length; i++) {
 		for (let j=0; j<net_gains.length; j++) {	// TODO: j=i+1?
-			if (net_gains[i]<0 && net_gains[j]>0) { // Player i pays player j
-				var amount = Math.min(Math.abs(net_gains[i]), Math.abs(net_gains[j]));
+			if (net_gains[i]<-EPS && net_gains[j]>EPS) { // Player i pays player j
+				var amount = Math.min(Math.abs(net_gains[i]), roundTo(Math.abs(net_gains[j]),2));
 				var net_gains_ij = [...net_gains];
 				net_gains_ij[i] += amount;
 				net_gains_ij[j] -= amount;
@@ -257,11 +223,11 @@ function calcOptimalTransactionsAux(net_gains, transactions) {
 }
 
 function assert(assertion, message) {
-	if (!assertion) throw message;
+	if (!assertion) alert(message);
 }
 
 function cloneTransArr(transactions) {
 	var arr = [];
-	transactions.forEach(trans => arr.push([trans[0], trans[1], trans[2]]));
+	transactions.forEach(trans => arr.push([trans[0], trans[1], roundTo(trans[2],2)]));
 	return arr;
 }
