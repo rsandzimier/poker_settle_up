@@ -99,6 +99,13 @@ input[type=button] {
 	display: block;
 }
 
+input[type=text] {
+	width: 3em;
+	font-size: var(--main-font-size);
+	font-family: var(--main-font-family);
+	padding: 0.2em;
+}
+
 .tableLabel {
 	font-weight: bold;
 }

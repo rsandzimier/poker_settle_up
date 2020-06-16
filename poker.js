@@ -1,6 +1,6 @@
 const EPS = 1e-6;
 
-var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets')];
+var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets'), document.getElementById('roundto')];
 function fit2page(evt) {
 	// Resize Header Font
 	var header = document.getElementById('header');
@@ -74,6 +74,12 @@ inputs[1].oninput = updateNets;
 inputs[2].oninput = updateNets;
 inputs[3].oninput = updateNets;
 
+var round_to = 0.01;
+function updateRoundTo(){
+	round_to = parseFloat(inputs[4].value);
+}
+inputs[4].oninput = updateRoundTo;
+
 function checkInput() {
 	var errorStr = '';
 
@@ -81,6 +87,7 @@ function checkInput() {
 	var buyins = inputs[1].value.split('\n');
 	var stacks = inputs[2].value.split('\n');
 	var nets = inputs[3].value.split('\n');
+	var roundto = inputs[4].value;
 
 	if (netcheck.checked) {
 		if (names.length != nets.length) {
@@ -102,6 +109,18 @@ function checkInput() {
 		stacks.forEach(entry => {
 			if (isNaN(parseFloat(entry))) errorStr+= `Final Stack "${entry}" must be a number\n`;
 		});
+	}
+
+	var nets_sum = nets.reduce((a, b) => parseFloat(a) + parseFloat(b));
+	if (!isNaN(nets_sum) && Math.abs(nets_sum) > EPS){
+		errorStr+= `Sum of nets must be 0\n`;
+	}
+
+	if (isNaN(parseFloat(roundto))) {
+		errorStr+= `Round to nearest "${roundto}" must be a number\n`;
+	}
+	else if (parseFloat(roundto) <= 0.0){
+		errorStr+= `Round to nearest "${roundto}" must be positive\n`;
 	}
 
 	if (errorStr.length==0) {
@@ -129,8 +148,10 @@ document.getElementById('calculate').onclick = () => {
 	} else {
 		updateNames();
 		updateNets();
+		updateRoundTo();
 		n_players = netArr.length;
-		var transactions = calcOptimalTransactions(netArr);
+		var netArr_rounded = roundNetGains(netArr, round_to);
+		var transactions = calcOptimalTransactions(netArr_rounded);
 		results.innerHTML = '';
 		transactions.forEach(trans => {
 			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(2)}`))
@@ -220,6 +241,36 @@ function calcOptimalTransactionsAux(net_gains, transactions) {
 	}
 
 	return {net_gains: net_gains_opt, transactions: transactions_opt};
+}
+
+function argmax(arr){
+    return arr.indexOf(Math.max(...arr));
+}
+function argmin(arr){
+    return arr.indexOf(Math.min(...arr));
+}
+
+function roundNetGains(net_gains, round_to){
+	var net_gains_rounded = new NumArray(net_gains.length).fill(0);
+	var rounding_errors = new NumArray(net_gains.length).fill(0);
+	for(let i = 0; i<net_gains_rounded.length; i++){
+		net_gains_rounded[i] = Math.round(net_gains[i]/round_to)*round_to;
+		rounding_errors[i] = net_gains_rounded[i] - net_gains[i];
+	}
+
+	while (net_gains_rounded.sum() > EPS){
+		var ind = argmax(rounding_errors);
+		net_gains_rounded[ind] -= round_to;
+		rounding_errors[ind] -= round_to;
+	}
+
+	while (net_gains_rounded.sum() < -EPS){
+		var ind = argmin(rounding_errors);
+		net_gains_rounded[ind] += round_to;
+		rounding_errors[ind] += round_to;
+	}
+
+	return net_gains_rounded;
 }
 
 function assert(assertion, message) {
