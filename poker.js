@@ -1,6 +1,8 @@
+// Constants
 const EPS = 1e-6;
 
-var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets'), document.getElementById('roundto')];
+// Define method to resize elements when page is resized
+var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets')];
 function fit2page(evt) {
 	// Resize Header Font
 	var header = document.getElementById('header');
@@ -40,6 +42,42 @@ window.addEventListener('resize', fit2page);
 window.addEventListener('orientationchange', fit2page);
 screen.orientationchange = fit2page;
 
+// Handling CSV file input
+function parseCSV(file) {
+	if (window.FileReader) {
+		file = file[0];
+		var players = [];
+		
+		netcheck.checked = false;
+		netcheck.onclick();
+
+		var reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = event => {
+			var csv = event.target.result;
+			var allTextLines = csv.split(/\r\n|\n/);
+			for (let r=2; r<allTextLines.length; r++) {
+				var data = allTextLines[r].split(',');
+				if (data.length<5) break;
+				players.push({name: data[0], buyins: (parseFloat(data[1])/100).toFixed(2), final: ((parseFloat(data[2])+parseFloat(data[4]))/100).toFixed(2)});
+			}
+			inputs.forEach(i => i.value = '');
+			players.forEach(p => {
+				inputs[0].value += p.name + '\n';
+				inputs[1].value += p.buyins + '\n';
+				inputs[2].value += p.final + '\n';
+			});
+			inputs.forEach(i => i.value = i.value.slice(0,-1));
+		};
+		reader.onerror = event => {
+			alert('Cannot read file!');
+		};
+	} else {
+		alert('FileReader are not supported in this browser.')
+	}
+}
+
+// Handling when user checks the box saying they have calculated everyone's net winnings.
 var netcheck = document.getElementById('netcheck');
 netcheck.onclick = () => {
 	if (netcheck.checked) {
@@ -53,6 +91,7 @@ netcheck.onclick = () => {
 	}
 }
 
+// Collect data from textareas
 var nameArr = [];
 function updateNames() { nameArr = inputs[0].value.split('\n'); }
 inputs[0].oninput = updateNames;
@@ -74,11 +113,12 @@ inputs[1].oninput = updateNets;
 inputs[2].oninput = updateNets;
 inputs[3].oninput = updateNets;
 
+var roundToEl = document.getElementById('roundto');
 var round_to = 0.01;
 function updateRoundTo(){
-	round_to = parseFloat(inputs[4].value);
+	round_to = parseFloat(roundToEl.value);
 }
-inputs[4].oninput = updateRoundTo;
+roundToEl.oninput = updateRoundTo;
 
 function checkInput() {
 	var errorStr = '';
@@ -87,7 +127,7 @@ function checkInput() {
 	var buyins = inputs[1].value.split('\n');
 	var stacks = inputs[2].value.split('\n');
 	var nets = inputs[3].value.split('\n');
-	var roundto = inputs[4].value;
+	var roundto = roundToEl.value;
 
 	if (netcheck.checked) {
 		if (names.length != nets.length) {
@@ -130,6 +170,7 @@ function checkInput() {
 	}
 }
 
+// When the user clicks "Calculate!" button
 var n_players;
 document.getElementById('calculate').onclick = () => {
 	var results = document.getElementById('results');

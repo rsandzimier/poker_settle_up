@@ -32,7 +32,9 @@
 		</header>
 		<main id="subwrapper">
 			<div>Script for optimizing transactions for settling up after playing a poker session at donkhouse.com</div><br>
-			<label>I already calculated everyone's net winnings</label>
+			<label for="csv">Optional: Upload CSV from DonkHouse.com</label>
+			<input type="file" name="csv" id="csv" onchange="parseCSV(this.files)" accept=".csv"><br><br>
+			<label for="netcheck">I already calculated everyone's net winnings</label>
 			<input type="checkbox" name="netcheck", id="netcheck" autocomplete="off"><br><br>
 			<table id="inputTable">
 				<tbody>

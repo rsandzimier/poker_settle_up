@@ -1,7 +1,6 @@
 :root {
 	--main-font-size: 1.4rem;
 	--button-font-size: 0.7rem;
-	--close-button-column-width: 1em;
 	--textarea-padding: 0.2em;
 	--main-lr-padding: 6%;
 
@@ -11,10 +10,7 @@
 	--main-text-color: #222222;
 	--accent-text-color: white;
 	--main-input-border-color: grey;
-	--close-button-bg-color: rgb(249,74,107);
-	--close-button-border-color: rgb(207,31,74);
-	--add-button-bg-color: rgb(211,211,211);
-	--add-button-border-color: rgb(151,151,151);
+	--readonly-color: #DCDCDC;
 	--main-font-family: 'Open Sans';
 	--accent-font-family: 'Open Sans';
 	--corner-rounding: 5px;
@@ -87,7 +83,19 @@ textarea {
 	text-align: left;
 }
 textarea[readonly] {
-	background-color: #DCDCDC;
+	background-color: var(--readonly-color);
+}
+textarea[readonly]::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+	color: var(--readonly-color);
+}
+textarea[readonly]::-moz-placeholder { /* Firefox 19+ */
+	color: var(--readonly-color);
+}
+textarea[readonly]:-ms-input-placeholder { /* IE 10+ */
+	color: var(--readonly-color);
+}
+textarea[readonly]:-moz-placeholder { /* Firefox 18- */
+	color: var(--readonly-color);
 }
 input[type=button] {
 	font-size: var(--main-font-size);
