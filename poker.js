@@ -42,9 +42,25 @@ window.addEventListener('resize', fit2page);
 window.addEventListener('orientationchange', fit2page);
 screen.orientationchange = fit2page;
 
+var chipsPerDollarEl = document.getElementById('chips_per_dollar');
+
+var chips_per_dollar = 100;
+function updateChipsPerDollar(){
+	chips_per_dollar = parseFloat(chipsPerDollarEl.value);
+}
+chipsPerDollarEl.oninput = updateChipsPerDollar;
+
 // Handling CSV file input
 function parseCSV(file) {
 	if (window.FileReader) {
+		if (isNaN(chips_per_dollar)) {
+			alert('Chips per $ must be a number')
+			return;
+		}
+		else if (parseFloat(chips_per_dollar) <= 0.0){
+			alert('Chips per $ must be positive')
+			return;
+		}
 		file = file[0];
 		var players = [];
 		
@@ -60,7 +76,7 @@ function parseCSV(file) {
 				var data = allTextLines[r].split(',');
 				if (data.length<5) break;
 
-				players.push({name: data[0], buyins: (Number(data[1])/100).toFixed(2), final: ((Number(data[2])+Number(data[4]))/100).toFixed(2)});
+				players.push({name: data[0], buyins: (Number(data[1])/chips_per_dollar).toFixed(2), final: ((Number(data[2])+Number(data[4]))/chips_per_dollar).toFixed(2)});
 			}
 			inputs.forEach(i => i.value = '');
 			players.forEach(p => {
@@ -69,6 +85,7 @@ function parseCSV(file) {
 				inputs[2].value += p.final + '\n';
 			});
 			inputs.forEach(i => i.value = i.value.slice(0,-1));
+			updateNets();
 		};
 		reader.onerror = event => {
 			alert('Cannot read file!');

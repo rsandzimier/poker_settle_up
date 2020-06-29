@@ -33,7 +33,9 @@
 		<main id="subwrapper">
 			<div>Script for optimizing transactions for settling up after playing a poker session at donkhouse.com</div><br>
 			<label for="csv">Optional: Upload CSV from DonkHouse.com</label>
-			<input type="file" name="csv" id="csv" onchange="parseCSV(this.files)" accept=".csv"><br><br>
+			<input type="file" name="csv" id="csv" onchange="parseCSV(this.files)" accept=".csv"><br>
+			<label>Optional: DonkHouse chips per $</label>
+			<input type="text" name="chips_per_dollar", id="chips_per_dollar", value="100"><br><br>
 			<label for="netcheck">I already calculated everyone's net winnings</label>
 			<input type="checkbox" name="netcheck", id="netcheck" autocomplete="off"><br><br>
 			<table id="inputTable">
