@@ -59,7 +59,8 @@ function parseCSV(file) {
 			for (let r=2; r<allTextLines.length; r++) {
 				var data = allTextLines[r].split(',');
 				if (data.length<5) break;
-				players.push({name: data[0], buyins: (parseFloat(data[1])/100).toFixed(2), final: ((parseFloat(data[2])+parseFloat(data[4]))/100).toFixed(2)});
+
+				players.push({name: data[0], buyins: (Number(data[1])/100).toFixed(2), final: ((Number(data[2])+Number(data[4]))/100).toFixed(2)});
 			}
 			inputs.forEach(i => i.value = '');
 			players.forEach(p => {
