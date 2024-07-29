@@ -213,7 +213,7 @@ document.getElementById('calculate').onclick = () => {
 		var transactions = calcOptimalTransactions(netArr_rounded);
 		results.innerHTML = '';
 		transactions.forEach(trans => {
-			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(round_to>=1 ? 0 : 2)}`))
+			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(Number.isInteger(round_to) ? 0 : 2)}`))
 			results.appendChild(document.createElement('BR'));
 		})
 	}
