@@ -18,12 +18,11 @@
 
 body {
 	background-color: var(--main-bg-color);
-}
-#mainPage {
 	background-color: var(--main-bg-color);
 	font-family: var(--main-font-family);
 	color: var(--main-text-color);
 }
+
 #wrapper {
 	background-color: var(--form-bg-color);
 	width: 60%;
@@ -31,6 +30,7 @@ body {
 	margin-right: auto ;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
 main {
 	margin: var(--main-lr-padding);
 	padding-bottom: var(--main-lr-padding);
@@ -44,22 +44,32 @@ header {
 	font-family: var(--accent-font-family);
 	font-weight: bold;
 	padding: 0.2em var(--main-lr-padding);
-	white-space: nowrap;
 }
+
+p, div {
+	margin: 2rem 0;
+}
+
 h1 {
 	display: inline-block;
 }
 
-.spacer {
-	height: 2em;
+details {
+	border: 1px solid black;
+	border-radius: 4px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+details div {
+	margin: 1rem 0;
 }
 
 label {
-	margin-right:1em;
+	margin-right: 1em;
 	font-size: var(--main-font-size);
 }
 label.unit {
-	margin-right:0;
+	margin-right: 0;
 }
 input[type=checkbox] {
 	width: 1.1em;
@@ -78,6 +88,11 @@ textarea {
 	outline: none;
 	resize: none;
 	text-align: right;
+	white-space: pre;
+	overflow-wrap: normal;
+	overflow-x: scroll;
+	width: 100%;
+	box-sizing: border-box;
 }
 #names {
 	text-align: left;
@@ -142,9 +157,6 @@ footer {
 		width: 100%;
 		padding: 0.6em 2em;
 		border-radius: var(--corner-rounding);
-	}
-	.spacer {
-		height: 1em;
 	}
 	#wrapper {
 		width: 99%;

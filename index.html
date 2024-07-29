@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
 	<title>Poker Settle Up</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- SEO Description -->
+	<meta name="author" content="Ryan Sandzimier and Nicholas S. Selby">
+	<meta name="description" content="Easily calculate poker payouts with our efficient transaction minimizer. Enter buy-ins and final stack sizes to determine who owes whom. Reduce complexity and save time with our SplitWise-style solution for settling poker debts. Perfect for home games and casual players looking to streamline the payout process.">
+	<link rel="canonical" href="https://rsandzimier.github.io/poker_settle_up/">
+
+	<!-- Open Graph Tags -->
+	<meta property="og:title" content="Poker Settle Up">
+	<meta property="og:description" content="Easily calculate poker payouts with our efficient transaction minimizer. Enter buy-ins and final stack sizes to determine who owes whom. Reduce complexity and save time with our SplitWise-style solution for settling poker debts. Perfect for home games and casual players looking to streamline the payout process.">
+	<meta property="og:url" content="https://rsandzimier.github.io/poker_settle_up/">
+	<meta property="og:type" content="website">
 
 	<!-- Fonts -->
-	<link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
-
-	<!-- Copy-Paste Debugging -->
-	<!-- Web: h_ttps://rsandzimier.github.io/poker_settle_up/
-		 Nick Ubuntu: f_ile:///home/nick/GitHub/poker_settle_up/
-		 Nick Windows: f_ile:///C:/Users/nick/Documents/GitHub/poker_settle_up/
-		 Ryan Ubuntu: f_ile:///home/dlab/poker_settle_up/
-		 -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href='https://fonts.googleapis.com/css?family=Open%20Sans' rel='stylesheet'>
 
 	<!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="https://rsandzimier.github.io/poker_settle_up/main.css">
+	<link rel="stylesheet" type="text/css" href="main.css">
 
 	<!-- Imports -->
 	<script src="https://rupumped.github.io/NicksAPPS/JavaScript/NumArray.js"></script>
@@ -25,19 +30,32 @@
 </head>
 
 <body>
-<div id="mainPage">
 	<div id="wrapper">
 		<header id="header">
 			<h1 id="headerText">Poker Settle Up</h1>
 		</header>
+		
 		<main id="subwrapper">
-			<div>Script for optimizing transactions for settling up after playing a poker session at donkhouse.com</div><br>
-			<label for="csv">Optional: Upload CSV from DonkHouse.com</label>
-			<input type="file" name="csv" id="csv" onchange="parseCSV(this.files)" accept=".csv"><br>
-			<label>Optional: DonkHouse chips per $</label>
-			<input type="text" name="chips_per_dollar", id="chips_per_dollar", value="100"><br><br>
-			<label for="netcheck">I already calculated everyone's net winnings</label>
-			<input type="checkbox" name="netcheck", id="netcheck" autocomplete="off"><br><br>
+			<p>Simplify post-game settlements by entering buy-ins and final stack sizes. Our calculator determines who owes whom, minimizing the number of transactions needed. Ideal for home games and casual players looking to streamline payouts quickly and fairly.</p>
+
+			<details>
+				<summary>Click Here for Donkouse Options (Optional)</summary>
+				<div>
+					<label for="csv">Upload CSV from DonkHouse.com</label>
+					<input type="file" name="csv" id="csv" onchange="parseCSV(this.files)" accept=".csv">
+				</div>
+
+				<div>
+					<label>DonkHouse chips per $</label>
+					<input type="text" name="chips_per_dollar" id="chips_per_dollar" value="100">
+				</div>
+			</details>
+
+			<div>
+				<label for="netcheck">I already calculated everyone's net winnings</label>
+				<input type="checkbox" name="netcheck" id="netcheck">
+			</div>
+
 			<table id="inputTable">
 				<tbody>
 					<tr>
@@ -47,24 +65,25 @@
 						<th>Nets</th>
 					</tr>
 					<tr>
-						<td><textarea name="names" id="names" cols="1" rows="10" placeholder="Player 1" wrap="off"></textarea></td>
-						<td><textarea name="buyins" id="buyins" cols="1" rows="10" placeholder="20.00" wrap="off"></textarea></td>
-						<td><textarea name="stacks" id="stacks" cols="1" rows="10" placeholder="35.00" wrap="off"></textarea></td>
-						<td><textarea name="nets" id="nets" cols="1" rows="10" placeholder="15.00" wrap="off" readonly></textarea></td>
+						<td><textarea name="names" id="names" cols="1" rows="10" placeholder="Player 1" wrap="soft"></textarea></td>
+						<td><textarea name="buyins" id="buyins" cols="1" rows="10" placeholder="20.00" wrap="soft"></textarea></td>
+						<td><textarea name="stacks" id="stacks" cols="1" rows="10" placeholder="35.00" wrap="soft"></textarea></td>
+						<td><textarea name="nets" id="nets" cols="1" rows="10" placeholder="15.00" wrap="soft" readonly></textarea></td>
 					</tr>
 				</tbody>
 			</table>
-			<br>
-			<label>Round to nearest:</label>
-			<input type="text" name="roundto", id="roundto", value="0.01"><br>
-			<br>
+
+			<div>
+				<label>Round to nearest:</label>
+				<input type="text" name="roundto" id="roundto" value="1">
+			</div>
+
 			<input type="button" name="calculate" id="calculate" value="Calculate!">
-			<br>
+
 			<div id="results"></div>
 		</main>
 	</div>
+
+	<script src="poker.js"></script>
 </body>
-
-<script src="https://rsandzimier.github.io/poker_settle_up/poker.js"></script>
-
 </html>

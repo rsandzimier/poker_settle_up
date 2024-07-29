@@ -1,5 +1,5 @@
 // Constants
-const EPS = 1e-6;
+const EPS = 1e-3;
 
 // Define method to resize elements when page is resized
 var inputs = [document.getElementById('names'), document.getElementById('buyins'), document.getElementById('stacks'), document.getElementById('nets')];
@@ -149,17 +149,17 @@ function checkInput() {
 
 	if (netcheck.checked) {
 		if (names.length != nets.length) {
-			errorStr+= 'Number of names must equal number of Nets\n';
+			errorStr+= `Number of names, ${names.length}, must equal number of Nets, ${nets.length}\n`;
 		}
 		nets.forEach(entry => {
 			if (isNaN(parseFloat(entry))) errorStr+= `Net "${entry}" must be a number\n`;
 		});
 	} else {
 		if (names.length != buyins.length) {
-			errorStr+= 'Number of names must equal number of Buy-Ins\n';
+			errorStr+= `Number of names, ${names.length}, must equal number of Buy-Ins, ${buyins.length}\n`;
 		}
 		if (names.length != stacks.length) {
-			errorStr+= 'Number of names must equal number of Final Stacks\n';
+			errorStr+= `Number of names, ${names.length}, must equal number of Final Stacks, ${stacks.length}\n`;
 		}
 		buyins.forEach(entry => {
 			if (isNaN(parseFloat(entry))) errorStr+= `BuyIn "${entry}" must be a number\n`;
@@ -171,7 +171,7 @@ function checkInput() {
 
 	var nets_sum = nets.reduce((a, b) => parseFloat(a) + parseFloat(b));
 	if (!isNaN(nets_sum) && Math.abs(nets_sum) > EPS){
-		errorStr+= `Sum of nets must be 0\n`;
+		errorStr+= `Sum of nets must be 0, but it is ${nets_sum}\n`;
 	}
 
 	if (isNaN(parseFloat(roundto))) {
@@ -213,7 +213,7 @@ document.getElementById('calculate').onclick = () => {
 		var transactions = calcOptimalTransactions(netArr_rounded);
 		results.innerHTML = '';
 		transactions.forEach(trans => {
-			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(2)}`))
+			results.appendChild(document.createTextNode(`${nameArr[trans[0]]} pays ${nameArr[trans[1]]} $${trans[2].toFixed(round_to>=1 ? 0 : 2)}`))
 			results.appendChild(document.createElement('BR'));
 		})
 	}
@@ -261,7 +261,8 @@ function transactionsComparison(trans1, trans2) {
 }
 
 function calcOptimalTransactions(net_gains) {
-	assert(Math.abs(net_gains.reduce((a,b) => a+b, 0))<EPS, 'Net gains must sum to 0');
+	const sumNetGains = Math.abs(net_gains.reduce((a,b) => a+b, 0))
+	assert(sumNetGains<EPS, `Net gains must sum to 0, but it is ${sumNetGains}`);
 	var obj = calcOptimalTransactionsAux(net_gains, []);
 
 	return obj.transactions;

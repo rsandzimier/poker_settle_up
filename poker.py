@@ -137,9 +137,3 @@ print("Settling Summary")
 print("==================================================")
 for trans in transactions:
     print(f"{names[trans[0]]} pays {names[trans[1]]} ${trans[2]:.2f}")
-
-
-
-
-
-
